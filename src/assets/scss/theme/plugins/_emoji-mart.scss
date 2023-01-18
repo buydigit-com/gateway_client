@@ -1,0 +1,41 @@
+.emoji-mart,
+.emoji-mart-dark {
+  border-color: var(--#{$prefix}input-border-color);
+  background-color: var(--#{$prefix}card-bg) !important;
+  .emoji-mart-anchor-bar {
+    background-color: var(--#{$prefix}primary) !important;
+  }
+  .emoji-mart-anchor {
+    color: var(--#{$prefix}navbar-vertical-link-color);
+    &:hover {
+      color: var(--#{$prefix}link-hover-color);
+    }
+    &.emoji-mart-anchor-selected {
+      color: var(--#{$prefix}primary) !important;
+    }
+  }
+  .emoji-mart-scroll {
+    @extend .scrollbar;
+  }
+  .emoji-mart-bar,
+  .emoji-mart-scroll,
+  .emoji-mart-category-label span {
+    border-color: var(--#{$prefix}input-border-color);
+    background-color: var(--#{$prefix}card-bg) !important;
+  }
+  .emoji-mart-search {
+    padding: 0 6px !important;
+    input {
+      background-color: var(--falcon-input-bg) !important;
+      border-color: var(--falcon-input-border-color);
+    }
+  }
+  .emoji-mart-emoji {
+    span {
+      pointer-events: none;
+    }
+    &:hover::before {
+      background-color: var(--#{$prefix}gray-200) !important;
+    }
+  }
+}

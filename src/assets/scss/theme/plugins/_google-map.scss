@@ -1,0 +1,6 @@
+.gm-fullscreen-control,
+.gm-svpc,
+.gmnoprint * {
+  background-color: var(--#{$prefix}card-bg) !important;
+  color: inherit !important;
+}
