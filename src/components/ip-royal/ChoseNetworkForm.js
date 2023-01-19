@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState,useEffect } from 'react';
 import PropTypes from 'prop-types';
 // import WizardInput from './WizardInput';
 
@@ -6,36 +6,49 @@ import Flex from 'components/common/Flex';
 import Avatar from 'components/common/Avatar';
 
 import eth from 'assets/img/iproyal/eth-icon.png';
+import classNames from 'classnames';
 
-const ChoseNetworkForm = ({ register, errors, watch }) => {
-  console.log(register, errors, watch);
+import GatewayService from 'services/gateway';
+
+const ChoseNetworkForm = ({ register, errors, watch, setFormData,activeCoin , activeNetwork }) => {
+  const [active, setActive] = useState(activeNetwork);
+  const [networks, setNetworks] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      let response = await GatewayService.getNetworks(activeCoin);
+      if (response.status == '200') {
+        console.log("response.data",response.data);
+        setNetworks(response.data.networks);
+      } else {
+        console.error(`Error: ${response.data.message}`);
+      }
+    })();
+  }, []);
+
   return (
-    <>
-      <Flex
-        alignItems="center"
-        className="border-bottom py-4 gap-1 cursor-pointer"
-      >
-        <Avatar src={eth} size="2xl" />
+    <div className="overflow-auto scrollbar" style={{ height: 365 }}>
+      {networks.map((network, index) => (
+        <Flex
+          key={network.id}
+          alignItems="center"
+          className={classNames(
+            "border-bottom py-4 gap-1 cursor-pointer hover-bg-100 px-2 rounded-3",
+            { "bg-200": active == network.id },
+            { "hover-bg-100": active != network.id }
+          )}
+          onClick={() => { setActive(network.id); setFormData(prevState => ({ ...prevState, network_id: network.id })); }}
+        >
+          <Avatar src={eth} size="2xl" />
 
-        <Flex className="ms-2" justifyContent="between w-100">
-          <span className="mb-0 text-dark fs-0 fw-semi-bold">
-            Ethereum Main Network
-          </span>
+          <Flex className="ms-2" justifyContent="between w-100">
+            <span className="mb-0 text-dark fs-0 fw-semi-bold">
+              {network.description}
+            </span>
+          </Flex>
         </Flex>
-      </Flex>
-      <Flex
-        alignItems="center"
-        className="border-bottom py-4 gap-1 cursor-pointer"
-      >
-        <Avatar src={eth} size="2xl" />
-
-        <Flex className="ms-2" justifyContent="between w-100">
-          <span className="mb-0 text-dark fs-0 fw-semi-bold">
-            Rinkeby Test Network
-          </span>
-        </Flex>
-      </Flex>
-    </>
+      ))}
+    </div>
   );
 };
 

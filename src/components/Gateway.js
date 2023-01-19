@@ -2,7 +2,7 @@ import React from 'react';
 import AuthWizardProvider from './wizard/AuthWizardProvider';
 import IpWizardLayout from './ip-royal/IpWizard';
 
-const IPRoyale = () => {
+const Gateway = () => {
   return (
     <AuthWizardProvider>
       <IpWizardLayout />
@@ -10,4 +10,4 @@ const IPRoyale = () => {
   );
 };
 
-export default IPRoyale;
+export default Gateway;

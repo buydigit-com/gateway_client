@@ -44,7 +44,7 @@ const MainLayout = () => {
             <NavbarTop />
             {/*------ Main Routes ------*/}
             <Outlet />
-            {!isKanban && <Footer />}
+            <Footer />
           </div>
         </CourseProvider>
       </ProductProvider>

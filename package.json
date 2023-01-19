@@ -22,6 +22,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "@tinymce/tinymce-react": "^3.13.0",
+    "axios": "^1.2.3",
     "bootstrap": "^5.2.2",
     "chart.js": "^3.5.1",
     "classnames": "^2.3.1",
@@ -67,6 +68,7 @@
     "react-use-scrollspy": "^3.0.2",
     "simplebar-react": "^2.4.1",
     "slick-carousel": "^1.8.1",
+    "socket.io-client": "4.4.0",
     "uuid": "^8.3.2",
     "video.js": "^7.14.3",
     "web-vitals": "^1.1.2"

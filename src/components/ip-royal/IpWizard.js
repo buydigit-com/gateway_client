@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState,useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Button,
@@ -22,8 +22,14 @@ import ChoseNetworkForm from './ChoseNetworkForm';
 import ScanCode from './ScanCode';
 import Invoice from './Invoice';
 import Check from './Check';
+import { io } from "socket.io-client";
+import { useParams } from 'react-router-dom';
+import { toBeRequired } from '@testing-library/jest-dom/dist/matchers';
 
 const IpWizardLayout = ({ variant, validation, progressBar }) => {
+
+  const params = useParams();
+
   const { isRTL } = useContext(AppContext);
   const { user, setUser, step, setStep } = useContext(AuthWizardContext);
   const {
@@ -60,6 +66,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
     setUser({ ...user, ...data });
     setStep(step + 1);
   };
+
   const onError = () => {
     if (!validation) {
       clearErrors();
@@ -81,17 +88,39 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
     }
   };
 
+  const [formData, setFormData] = useState({
+    coin_id: undefined,
+    network_id: undefined,
+  });
+
+  const [socket, setSocket] = useState(null);
+  
+
+  useEffect(() => {
+    const newSocket = io("http://api.buydigit.com:5000/", { query: "hash="+params.txn_hash , rememberUpgrade:true, rememberTransport:true,transport: ['websocket'] });
+    setSocket(newSocket);
+    
+    newSocket.on('txnUpdate', (data) => {
+      console.log(data);
+    });
+
+    newSocket.on('connect', () => {
+      console.log("Connected");
+    });
+
+    return () => newSocket.close();
+  }, []);
+
   return (
     <>
       <div className="w-100">
         <div
-          className={classNames('theme-wizard pt-2 mx-auto', {
+          className={classNames('theme-wizard w-100 w-lg-50 pt-2 mx-auto', {
             'px-4 py-3': variant === 'pills',
             'pb-2': !variant
           })}
-          style={{ maxWidth: '60%' }}
         >
-          <Nav className="justify-content-center" variant={variant}>
+          <Nav className="justify-content-center" variant={'variant'}>
             {variant === 'pills'
               ? navItems.map((item, index) => (
                   <NavItemPill
@@ -124,20 +153,25 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
           className="theme-wizard mb-5 position-relative"
         >
           {progressBar && <ProgressBar now={step * 25} style={{ height: 2 }} />}
-          <div className="fw-normal px-md-6 py-4">
+          <div className="fw-normal px-lg-6 py-4">
             {step === 1 && (
-              <Flex className="gap-3">
-                <Card style={{ width: '60%' }} className="rounded-4">
+              <Flex className="flex-column gap-3 flex-lg-row">
+                <Card className="rounded-4 w-100 w-lg-50 order-2 order-lg-1">
                   <Card.Header className="border-bottom">
                     <Card.Title> Select Currency</Card.Title>
                   </Card.Header>
                   <Card.Body className="d-flex flex-column justify-content-between">
                     <div>
-                      <SearchBox autoCompleteItem={autoCompleteInitialItem} />
+                      <div className='mb-4'>
+                        <SearchBox autoCompleteItem={autoCompleteInitialItem} />
+                      </div>
                       <ChoseCoinForm
+                        activeCoin={formData.coin_id}
+                        setFormData={setFormData}
                         register={register}
                         errors={errors}
                         watch={watch}
+                        txn_hash={params.txn_hash}
                       />
                     </div>
 
@@ -146,14 +180,18 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                       className="ms-auto rounded-4  w-100 px-5 mt-5 py-3"
                       type="submit"
                       transform="down-1 shrink-4"
+                      disabled={formData.coin_id === undefined}
                     >
                       Proceed to pay
                     </Button>
                   </Card.Body>
                 </Card>
-                <Card style={{ width: '40%' }} className="rounded-4">
+                <Card
+                  className="rounded-4 w-100 w-lg-50 order-1 order-lg-2"
+                  style={{ height: 400 }}
+                >
                   <Card.Header className="border-bottom">
-                    <Card.Title as="h6">Payment Summary</Card.Title>
+                    <Card.Title>Payment Summary</Card.Title>
                   </Card.Header>
                   <Card.Body>
                     <Flex justifyContent="between pb-3">
@@ -186,13 +224,16 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
               </Flex>
             )}
             {step === 2 && (
-              <Card style={{ width: '60%' }} className="rounded-4 mx-auto">
+              <Card className="rounded-4 mx-auto w-100 w-lg-50">
                 <Card.Header className="border-bottom">
                   <Card.Title> Select Network</Card.Title>
                 </Card.Header>
                 <Card.Body className="d-flex flex-column justify-content-between">
                   <div>
                     <ChoseNetworkForm
+                      activeCoin={formData.coin_id}
+                      activeNetwork={formData.network_id}
+                      setFormData={setFormData}
                       register={register}
                       errors={errors}
                       watch={watch}
@@ -204,6 +245,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                     className="ms-auto rounded-4  w-100 px-5 mt-3 py-3"
                     type="submit"
                     transform="down-1 shrink-4"
+                    disabled={formData.network_id === undefined}
                   >
                     Continue
                   </Button>
@@ -211,7 +253,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
               </Card>
             )}
             {step === 3 && (
-              <Card style={{ width: '60%' }} className="rounded-4 mx-auto">
+              <Card className="rounded-4 w-100 w-lg-50 mx-auto">
                 <Card.Header className="border-bottom">
                   <Card.Title className="text-center"> Send Payment</Card.Title>
                 </Card.Header>
@@ -226,27 +268,21 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
             )}
             {step === 4 && (
               <Flex alignItems="center" direction="column" className="gap-3">
-                <Card
-                  style={{ width: '60%' }}
-                  className="rounded-4 mx-auto shadow-sm"
-                >
+                <Card className="rounded-4 mx-auto shadow-sm w-lg-50 w-100">
                   <Card.Body className="d-flex flex-column justify-content-between">
                     <Invoice />
                   </Card.Body>
                 </Card>
-                <Button
-                  style={{ width: '60%' }}
-                  className="btn-danger py-3 rounded-4 mx-auto"
-                >
+                <Button className="btn-danger py-3 rounded-4 mx-auto w-100 w-lg-50">
                   Download Invoice
                 </Button>
               </Flex>
             )}
           </div>
           <div
-            className={classNames('px-md-6 position-absolute', {
+            className={classNames('px-lg-6 position-absolute', {
               'd-none': step === 4,
-              ' d-flex': step < 4
+              ' d-none d-lg-flex': step < 4
             })}
             style={{ top: '45%', left: '5%' }}
           >
@@ -280,10 +316,12 @@ const NavItem = ({ index, step, handleNavs, label }) => {
           done: index < 4 ? step > index : step > 3,
           active: step === index
         })}
-        onClick={() => handleNavs(index)}
       >
         <span className="nav-item-circle-parent ">
-          <span className="nav-item-circle position-relative">
+          <span
+            style={{ borderRadius: '40%' }}
+            className="nav-item-circle position-relative"
+          >
             {step !== index && <Check />}
             <span
               hidden={index <= 4 ? step > index : step > 3}
@@ -294,7 +332,7 @@ const NavItem = ({ index, step, handleNavs, label }) => {
             </span>
           </span>
         </span>
-        <span className="d-none d-md-block mt-1 fs--1">{label}</span>
+        <span className="d-none d-lg-block mt-1 fs--1">{label}</span>
       </Nav.Link>
     </Nav.Item>
   );
@@ -313,7 +351,7 @@ const NavItemPill = ({ index, step, handleNavs, icon, label }) => {
         <Flex alignItems="center" justifyContent="center">
           <FontAwesomeIcon icon={icon} />
           {/* <span>{index}</span> */}
-          <span className="d-none d-md-block mt-1 fs--1 ms-2">{label}</span>
+          <span className="d-none d-lg-block mt-1 fs--1 ms-2">{label}</span>
         </Flex>
       </Nav.Link>
     </Nav.Item>

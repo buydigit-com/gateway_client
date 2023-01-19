@@ -8,7 +8,7 @@ import animationData from './lottie/warning-light.json';
 
 const WizardModal = ({ modal, setModal }) => {
   return (
-    <Modal show={modal} centered dialogClassName="wizard-modal">
+    <Modal show={modal} centered>
       <Modal.Body className="p-4">
         <FalconCloseButton
           size="sm"
