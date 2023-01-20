@@ -22,6 +22,7 @@ const TopNavRightSideNavItem = () => {
         <Nav.Link
           className="btn btn-danger text-white px-3 my-2 rounded-3 btn-sm me-2"
           style={{ paddingBottom: '5px', paddingTop: '5px' }}
+          disabled={true}
           // onClick={() => setConfig('isDark', !isDark)}
         >
           Login
@@ -31,7 +32,7 @@ const TopNavRightSideNavItem = () => {
       {/* <CartNotification /> */}
       {/* <NotificationDropdown /> */}
       {/* <NineDotMenu /> */}
-      <ProfileDropdown />
+      {/* <ProfileDropdown /> */}
     </Nav>
   );
 };

@@ -5,7 +5,7 @@ const Loading = () => {
   return (
     <>
       <Container
-        className="d-flex align-items-center justify-content-center vh-100 d-flex flex-column "
+        className="d-flex align-items-center justify-content-center d-flex flex-column "
         fluid="md"
       >
         <div class="h-100 d-flex align-items-center justify-content-center">

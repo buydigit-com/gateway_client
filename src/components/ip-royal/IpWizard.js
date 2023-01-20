@@ -25,6 +25,8 @@ import Check from './Check';
 import { io } from "socket.io-client";
 import { useParams } from 'react-router-dom';
 import { toBeRequired } from '@testing-library/jest-dom/dist/matchers';
+import { min } from 'd3';
+import Loading from './Loading';
 
 const IpWizardLayout = ({ variant, validation, progressBar }) => {
 
@@ -32,6 +34,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
 
   const { isRTL } = useContext(AppContext);
   const { user, setUser, step, setStep } = useContext(AuthWizardContext);
+
   const {
     register,
     handleSubmit,
@@ -93,26 +96,77 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
     network_id: undefined,
   });
 
+  const [txnData, setTxnData] = useState(undefined);
+  const [availableStep, setAvailableStep] = useState({
+    "min": 1,
+    "max": 4,
+  });
   const [socket, setSocket] = useState(null);
   
 
   useEffect(() => {
-    const newSocket = io("http://api.buydigit.com:5000/", { query: "hash="+params.txn_hash , rememberUpgrade:true, rememberTransport:true,transport: ['websocket'] });
+    const newSocket = io("http://api.buydigit.com:5000/", { query: "txn_hash="+params.txn_hash , rememberUpgrade:true, rememberTransport:true,transport: ['websocket'] });
     setSocket(newSocket);
     
-    newSocket.on('txnUpdate', (data) => {
-      console.log(data);
-    });
-
-    newSocket.on('connect', () => {
-      console.log("Connected");
+    newSocket.on(params.txn_hash, (data) => {
+      setTxnData(JSON.parse(data));
     });
 
     return () => newSocket.close();
   }, []);
 
+  useEffect(() => {
+    if (txnData == undefined) {
+      return;
+    }
+
+    if (txnData.deposit.status == 'pending') {
+      setAvailableStep({
+        "min": 1,
+        "max": 4,
+      });
+    }
+    else if (txnData.deposit.status == 'initiated') {
+      setAvailableStep({
+        "min": 1,
+        "max": 4,
+      });
+    }
+    else if (txnData.deposit.status == 'waitingconfirm') {
+      setAvailableStep({
+        "min": 3,
+        "max": 4,
+      });
+    }
+    else if (txnData.deposit.status == 'confirmed') {
+      setAvailableStep({
+        "min": 4,
+        "max": 4,
+      });
+    }
+    else if (txnData.deposit.status == 'failed') {
+      setAvailableStep({
+        "min": 4,
+        "max": 4,
+      });
+    }
+  }, [txnData]);
+
+  useEffect(() => {
+    if (step < availableStep.min) {
+      console.log("step < availableStep.min", step, availableStep.min);
+      setStep(availableStep.min);
+    }
+  }, [availableStep]);
+
+  console.log(txnData);
+
+
   return (
     <>
+      {txnData == undefined && <Loading />}
+      {txnData != undefined && (
+      <>
       <div className="w-100">
         <div
           className={classNames('theme-wizard w-100 w-lg-50 pt-2 mx-auto', {
@@ -163,7 +217,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                   <Card.Body className="d-flex flex-column justify-content-between">
                     <div>
                       <div className='mb-4'>
-                        <SearchBox autoCompleteItem={autoCompleteInitialItem} />
+                        <SearchBox autoCompleteItem={[]} />
                       </div>
                       <ChoseCoinForm
                         activeCoin={formData.coin_id}
@@ -188,35 +242,48 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                 </Card>
                 <Card
                   className="rounded-4 w-100 w-lg-50 order-1 order-lg-2"
-                  style={{ height: 400 }}
+                  style={{ height: 650 }}
                 >
                   <Card.Header className="border-bottom">
                     <Card.Title>Payment Summary</Card.Title>
                   </Card.Header>
                   <Card.Body>
                     <Flex justifyContent="between pb-3">
-                      <span className="text-dark fw-semi-bold">Store Name</span>
-                      <span className="fs--1 text-dark">Franklin Decor</span>
-                    </Flex>
-                    <Flex justifyContent="between pb-1">
-                      <span className="text-dark fw-semi-bold">Amount</span>
-                      <span className="fs--1 text-dark">250.00</span>
+                      <span className="text-dark fw-semi-bold">Shop</span>
+                      <span className="fs--1 text-dark">{txnData.shop.name}</span>
                     </Flex>
                     <Flex justifyContent="between pb-3">
-                      <span className="text-dark fw-semi-bold">Tax</span>
-                      <span className="fs--1 text-dark">0.00</span>
+                      <span className="text-dark fw-semi-bold">Product #ID</span>
+                      <span className="fs--1 text-dark">{txnData.product_id}</span>
+                    </Flex>
+                    <Flex justifyContent="between pb-3">
+                      <span className="text-dark fw-semi-bold">Product Description</span>
+                      <span className="fs--1 text-dark">{txnData.product_description}</span>
+                    </Flex>
+                    <hr />
+                    <Flex justifyContent="between pb-3">
+                      <span className="text-dark fw-semi-bold">Fiat Amount</span>
+                      <span className="fs--1 text-dark">{txnData.fiat_amount} {txnData.fiat_currency == "usd" ? "$" : txnData.fiat_currency == "eur" ? "€" : "error" } </span>
+                    </Flex>
+                    <Flex justifyContent="between pb-3">
+                      <span className="text-dark fw-semi-bold">Fees</span>
+                      <span className="fs--1 text-dark">0.00 {txnData.fiat_currency == "usd" ? "$" : txnData.fiat_currency == "eur" ? "€" : "error" }</span>
                     </Flex>
                     <hr />
                     <Flex justifyContent="between pb-2">
                       <span className="text-dark fw-semi-bold">Total Pay</span>
-                      <span className="fs--1 text-dark fw-semi-bold">
-                        250.0
+                      <span className="fs--1 text-danger fw-bold ">
+                        {txnData.fiat_amount} {txnData.fiat_currency == "usd" ? "$" : txnData.fiat_currency == "eur" ? "€" : "error" }
                       </span>
                     </Flex>
-                    <div className="rounded-3 border border-300 p-3 mt-3 text-truncate">
-                      <p className="mb-1 text-dark">Pay with crypto</p>
+                    <Flex justifyContent="between pb-3">
+                      <span className="text-dark fw-semi-bold">Expiry Date</span>
+                      <span className="fs--1 text-dark">{txnData.expiry_at}</span>
+                    </Flex>
+                    <div className="ms-auto rounded-3 border border-300 p-3 mt-3 text-truncate">
+                      <p className="mb-1 text-dark">Paying with buydigit.com</p>
                       <span className="fs--1  " style={{ width: '90px' }}>
-                        Pay via Bitcoin, Ethereum and other cryptocurrencies.
+                        via Bitcoin, Ethereum and other cryptocurrencies.
                       </span>
                     </div>
                   </Card.Body>
@@ -246,6 +313,16 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                     type="submit"
                     transform="down-1 shrink-4"
                     disabled={formData.network_id === undefined}
+                    onClick={() => {
+                      setTxnData({...txnData, deposit: {
+                        amount: undefined,
+                      }})
+                      socket.emit('initiateTransaction', {
+                        txn_hash: params.txn_hash,
+                        coin_id: formData.coin_id,
+                        network_id: formData.network_id,
+                      });
+                    }}
                   >
                     Continue
                   </Button>
@@ -260,6 +337,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                 <Card.Body className="d-flex flex-column justify-content-between">
                   <ScanCode
                     register={register}
+                    txnData={txnData}
                     errors={errors}
                     setValue={setValue}
                   />
@@ -294,7 +372,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
               className={classNames(
                 'px-0 fw-semi-bold rounded-circle px-3 py-2 shadow-sm',
                 {
-                  'd-none': step === 1
+                  'd-none': step - 1 < availableStep.min
                 }
               )}
               onClick={() => {
@@ -304,6 +382,8 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
           </div>
         </Form>
       </Container>
+    </>
+      )}
     </>
   );
 };

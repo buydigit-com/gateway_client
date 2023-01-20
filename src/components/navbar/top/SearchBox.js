@@ -96,7 +96,7 @@ const SearchBox = ({ autoCompleteItem }) => {
             className="rounded-3  search-input"
             value={searchInputValue}
             onChange={({ target }) => setSearchInputValue(target.value)}
-            onClick={() => setDropdownOpen(false)}
+            disabled={true}
           />
           <FontAwesomeIcon
             icon="search"

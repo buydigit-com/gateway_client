@@ -1,4 +1,4 @@
-import React, { Fragment, useState,useEffect } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 // import WizardInput from './WizardInput';
 
@@ -7,10 +7,18 @@ import Avatar from 'components/common/Avatar';
 
 import eth from 'assets/img/iproyal/eth-icon.png';
 import classNames from 'classnames';
-
+import Loading from './Loading';
 import GatewayService from 'services/gateway';
 
-const ChoseNetworkForm = ({ register, errors, watch, setFormData,activeCoin , activeNetwork }) => {
+const ChoseNetworkForm = ({
+  register,
+  errors,
+  watch,
+  setFormData,
+  activeCoin,
+  activeNetwork
+}) => {
+  const [loading, setLoading] = useState(true);
   const [active, setActive] = useState(activeNetwork);
   const [networks, setNetworks] = useState([]);
 
@@ -18,7 +26,7 @@ const ChoseNetworkForm = ({ register, errors, watch, setFormData,activeCoin , ac
     (async () => {
       let response = await GatewayService.getNetworks(activeCoin);
       if (response.status == '200') {
-        console.log("response.data",response.data);
+        console.log('response.data', response.data);
         setNetworks(response.data.networks);
       } else {
         console.error(`Error: ${response.data.message}`);
@@ -26,30 +34,48 @@ const ChoseNetworkForm = ({ register, errors, watch, setFormData,activeCoin , ac
     })();
   }, []);
 
-  return (
-    <div className="overflow-auto scrollbar" style={{ height: 365 }}>
-      {networks.map((network, index) => (
-        <Flex
-          key={network.id}
-          alignItems="center"
-          className={classNames(
-            "border-bottom py-4 gap-1 cursor-pointer hover-bg-100 px-2 rounded-3",
-            { "bg-200": active == network.id },
-            { "hover-bg-100": active != network.id }
-          )}
-          onClick={() => { setActive(network.id); setFormData(prevState => ({ ...prevState, network_id: network.id })); }}
-        >
-          <Avatar src={eth} size="2xl" />
+  useEffect(() => {
+    if (networks.length > 0) {
+      setLoading(false);
+    }
+  }, [networks]);
 
-          <Flex className="ms-2" justifyContent="between w-100">
-            <span className="mb-0 text-dark fs-0 fw-semi-bold">
-              {network.description}
-            </span>
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (!loading) {
+    return (
+      <div className="overflow-auto scrollbar" style={{ height: 365 }}>
+        {networks.map((network, index) => (
+          <Flex
+            key={network.id}
+            alignItems="center"
+            className={classNames(
+              'border-bottom py-3 gap-1 cursor-pointer hover-bg-100 px-2 rounded-3',
+              { 'bg-200': active == network.id },
+              { 'hover-bg-100': active != network.id }
+            )}
+            onClick={() => {
+              setActive(network.id);
+              setFormData(prevState => ({
+                ...prevState,
+                network_id: network.id
+              }));
+            }}
+          >
+            <Avatar src={eth} size="2xl" />
+
+            <Flex className="ms-2" justifyContent="between w-100">
+              <span className="mb-0 text-dark fs-0 fw-semi-bold">
+                {network.description}
+              </span>
+            </Flex>
           </Flex>
-        </Flex>
-      ))}
-    </div>
-  );
+        ))}
+      </div>
+    );
+  }
 };
 
 ChoseNetworkForm.propTypes = {
