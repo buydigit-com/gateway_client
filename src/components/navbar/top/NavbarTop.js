@@ -120,7 +120,7 @@ const NavbarTopElements = ({
         </button>
       </Navbar.Toggle>
 
-      <Logo at="navbar-top" textClass="text-900" width={40} id="topLogo" />
+      <Logo at="navbar-top" textClass="text-900" width={190} id="topLogo" />
 
       {navbarPosition === 'top' ||
         (navbarPosition === 'combo' && (

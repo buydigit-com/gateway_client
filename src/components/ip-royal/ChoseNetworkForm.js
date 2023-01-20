@@ -52,7 +52,7 @@ const ChoseNetworkForm = ({
             key={network.id}
             alignItems="center"
             className={classNames(
-              'border-bottom py-3 gap-1 cursor-pointer hover-bg-100 px-2 rounded-3',
+              'border-bottom py-2 gap-1 cursor-pointer hover-bg-100 px-2 rounded-3',
               { 'bg-200': active == network.id },
               { 'hover-bg-100': active != network.id }
             )}

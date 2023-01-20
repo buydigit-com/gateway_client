@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 // import logo from 'assets/img/illustrations/falcon.png';
 
-const Logo = ({ at, className, textClass, ...rest }) => {
+const Logo = ({ at, width, className, textClass, ...rest }) => {
   return (
     <Link
       to="/"
@@ -26,10 +26,10 @@ const Logo = ({ at, className, textClass, ...rest }) => {
           className
         )}
       >
-        {/* <img className="me-2" src={logo} alt="Logo" width={width} /> */}
-        <span className={classNames('font-sans-serif', textClass)}>
+        <img className="me-2" src={"/images/logo/buydigit.svg"} alt="Logo" width={width} /> 
+        {/* <span className={classNames('font-sans-serif', textClass)}>
           IPRoyale
-        </span>
+        </span> */}
       </div>
     </Link>
   );

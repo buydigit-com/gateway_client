@@ -25,7 +25,7 @@ const ScanCode = ({ register, errors, watch, txnData }) => {
               <span className="text-dark text-truncate fw-semi-bold">
                 Payment Status:&nbsp;
                 <SoftBadge pill bg="warning" className="ml-2">
-                  Initiated
+                  Pending
                 </SoftBadge>
               </span>
               <Spinner animation="grow" size="sm" />
