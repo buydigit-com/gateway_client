@@ -25,7 +25,7 @@ const ShopThemeProvider = ({ children }) => {
           '--falcon-btn-disabled-bg': txnData.shop.theme_customization.primary,
           '--falcon-btn-border-color': txnData.shop.theme_customization.primary,
           '--falcon-btn-bg': txnData.shop.theme_customization.primary,
-          '--falcon-btn-hover-bg': txnData.shop.theme_customization.primary,
+          '--falcon-btn-hover-bg': "#c89516",
           '--falcon-btn-hover-color':
             txnData.shop.theme_customization.primary_text,
           '--falcon-btn-color': txnData.shop.theme_customization.primary_text,
@@ -40,7 +40,8 @@ const ShopThemeProvider = ({ children }) => {
             txnData.shop.theme_customization.primary_text,
           '--falcon-btn-active-bg': txnData.shop.theme_customization.primary,
           '--falcon-btn-active-border-color':
-            txnData.shop.theme_customization.primary
+            txnData.shop.theme_customization.primary,
+          'hover': "opacity: 0.8"
         },
         text: {
           '--falcon-danger-rgb': '254,181,0'

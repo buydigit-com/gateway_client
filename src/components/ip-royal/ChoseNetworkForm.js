@@ -65,11 +65,14 @@ const ChoseNetworkForm = ({
               }));
             }}
           >
-            <Avatar src={eth} size="2xl" />
+            <Avatar src={'/images/network/' + network.description.toLowerCase() + '.svg'} size="2xl" />
 
             <Flex className="ms-2" justifyContent="between w-100">
-              <span className="mb-0 text-dark fs-0 fw-semi-bold">
-                {network.description}
+              <span className="mb-0 text-dark fs-0 fw-bold">
+                {network.name}
+              </span>
+              <span className="fs-0 mb-0 text-dark fw-semi-bold">
+                {network.symbol}
               </span>
             </Flex>
           </Flex>

@@ -102,7 +102,7 @@ const ScanCode = ({ register, errors, watch, txnData, shopTheme }) => {
             </span>
           </span>
           <p className="w-100 w-lg-50 text-center mx-auto fs--1 mt-1">
-            Network Selected: {txnData.deposit.network.description}
+            Network Selected: {txnData.deposit.network.name} {txnData.deposit.network.description} 
           </p>
           <div className="border rounded-3 p-2 mt-2">
             <QRCode

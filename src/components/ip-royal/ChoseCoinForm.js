@@ -26,7 +26,9 @@ const ChoseCoinForm = ({
   const [active, setActive] = useState(activeCoin);
   const [coins, setCoins] = useState([]);
 
-  const [slice, setSlice] = useState(4);
+  const [slice, setSlice] = useState(6);
+
+  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -84,7 +86,7 @@ const ChoseCoinForm = ({
 
                   <Flex className="ms-2" justifyContent="between w-100">
                     <span className="mb-0 text-dark fs-0 fw-bold">
-                      {coin.description}
+                      {coin.name}
                     </span>
                     <span className="fs-0 mb-0 text-dark fw-semi-bold">
                       {coin.symbol}
@@ -100,7 +102,7 @@ const ChoseCoinForm = ({
 
         <div
           className={classNames('position-absolute hover-200', {
-            'd-none': coins.length > 4
+            'd-none': coins.length < 4 || showMore
           })}
           style={{ bottom: -13, right: 'calc(50% - 59px)' }}
         >
@@ -112,6 +114,7 @@ const ChoseCoinForm = ({
             alignItems="center"
             onClick={() => {
               setSlice(999);
+              setShowMore(true);
             }}
           >
             <span className="text-white">More Currency</span>

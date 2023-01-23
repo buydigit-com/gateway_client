@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import Loading from "../Loading";
 import { WebSocketContext } from "./WebSocketProvider";
 
 const TxnDataContext = React.createContext();
@@ -18,19 +19,7 @@ const TxnDataProvider = ({ children }) => {
   }, []);
 
   if (txnData === undefined) {
-    return (
-      <div className="container">
-        <div className="row">
-          <div className="col-12">
-            <div className="d-flex justify-content-center">
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <Loading init={true} />
   }
 
   return (
