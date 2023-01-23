@@ -26,7 +26,7 @@ const Logo = ({ at, width, className, textClass, ...rest }) => {
           className
         )}
       >
-        <img className="me-2" src={"/images/logo/buydigit.svg"} alt="Logo" width={width} /> 
+        <img className="me-2" src={"/images/logo/MainPanel.svg"} alt="Logo" width={width} /> 
         {/* <span className={classNames('font-sans-serif', textClass)}>
           IPRoyale
         </span> */}

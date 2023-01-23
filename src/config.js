@@ -4,7 +4,7 @@ export const topNavbarBreakpoint = 'lg';
 export const settings = {
   isFluid: true,
   isRTL: false,
-  isDark: false,
+  isDark: true,
   navbarPosition: 'vertical',
   showBurgerMenu: false, // controls showing vertical nav on mobile
   currency: '$',

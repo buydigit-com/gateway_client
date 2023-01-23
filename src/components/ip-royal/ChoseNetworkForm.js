@@ -16,7 +16,8 @@ const ChoseNetworkForm = ({
   watch,
   setFormData,
   activeCoin,
-  activeNetwork
+  activeNetwork,
+  shopTheme
 }) => {
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState(activeNetwork);
@@ -41,7 +42,7 @@ const ChoseNetworkForm = ({
   }, [networks]);
 
   if (loading) {
-    return <Loading />;
+    return <Loading shopTheme={shopTheme} />;
   }
 
   if (!loading) {

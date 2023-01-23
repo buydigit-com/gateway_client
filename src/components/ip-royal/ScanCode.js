@@ -11,7 +11,7 @@ import Loading from './Loading';
 import { Spinner } from 'react-bootstrap';
 import SoftBadge from 'components/common/SoftBadge';
 
-const ScanCode = ({ register, errors, watch, txnData }) => {
+const ScanCode = ({ register, errors, watch, txnData, shopTheme }) => {
   function Status() {
     switch (txnData.deposit.status) {
       case 'initiated':
@@ -54,11 +54,33 @@ const ScanCode = ({ register, errors, watch, txnData }) => {
             </span>
           </div>
         );
+        case 'confirmed':
+          return (
+            <div className="w-100 w-lg-75 rounded-3 border border-300 p-3 mt-3 text-truncate">
+              <Flex
+                className=""
+                justifyContent="between"
+                alignItems="center"
+              >
+                <span className="text-dark text-truncate fw-semi-bold">
+                  Payment Status:&nbsp;
+                  <SoftBadge pill bg="success" className="ml-2">
+                    Confirmed
+                  </SoftBadge>
+                </span>
+                <Spinner animation="grow" size="sm" />
+              </Flex>
+              <span className="fs--1  " style={{ width: '90px' }}>
+                Blockchain Transaction: &nbsp;&nbsp;
+                <a target="_blank" href={txnData.deposit.network.explorer_url+txnData.deposit.blockchain_txid}>{txnData.deposit.blockchain_txid.substring(0, 30)+"..."}</a>  
+              </span>
+            </div>
+          );
     }
   }
 
   if (txnData.deposit.amount == undefined) {
-    return <Loading />;
+    return <Loading shopTheme={shopTheme} />;
   }
 
   if (txnData.deposit.amount != undefined) {
@@ -71,7 +93,7 @@ const ScanCode = ({ register, errors, watch, txnData }) => {
         >
           <span className="fs-0 text-dark"> You are paying</span>
           <span>
-            <span className="fs-1 fw-semi-bold text-danger fs-2">
+            <span style={shopTheme.theme.text} className="fs-1 fw-semi-bold text-danger fs-2">
               {txnData.deposit.amount}
             </span>
             <span className="fw-semi-bold fs-1 text-dark">

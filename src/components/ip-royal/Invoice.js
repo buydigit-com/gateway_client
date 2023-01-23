@@ -1,37 +1,87 @@
 import Flex from 'components/common/Flex';
 import React from 'react';
+import Logo from 'components/common/Logo';
 
-const Invoice = () => {
+const Invoice = ({ txnData,shopTheme }) => {
+
+
   return (
     <Flex direction="column" className="py-3 cursor-pointer">
-      <h5 className="text-danger fw-bold text-center fs-2 mb-6">IpRoyal</h5>
-      <h5 className="fw-semi-bold text-dark fs-2 mb-3">Invoice</h5>
-      <Flex justifyContent="between">
-        <p className="text-start text-dark fw-semi-bold mb-1 pb-1">Order ID</p>
-        <p className="text-end text-dark">#4545114</p>
+      <Logo textClass="text-900" width={190} />
+      <h5 className="fw-semi-bold text-dark fs-2 mb-3 mt-3">Invoice</h5>
+      <Flex justifyContent="between pb-3">
+        <span className="text-dark fw-semi-bold">Shop</span>
+        <span className="fs--1 text-dark">{txnData.shop.name}</span>
       </Flex>
-      <Flex justifyContent="between" className="mb-2">
-        <p className="text-start text-dark fw-semi-bold">Store Name</p>
-        <p className="text-end text-dark">Franklin Decor</p>
+      <Flex justifyContent="between pb-3">
+        <span className="text-dark fw-semi-bold">Product #ID</span>
+        <span className="fs--1 text-dark">{txnData.product_id}</span>
       </Flex>
-      <Flex justifyContent="between">
-        <p className="text-start text-dark fw-semi-bold">Amount</p>
-        <p className="text-end text-dark">250.00</p>
-      </Flex>
-      <Flex justifyContent="between">
-        <p className="text-start text-dark fw-semi-bold">Tax</p>
-        <p className="text-end text-dark">0.00</p>
+      <Flex justifyContent="between pb-3">
+        <span className="text-dark fw-semi-bold">Product Description</span>
+        <span className="fs--1 text-dark">{txnData.product_description}</span>
       </Flex>
       <hr />
-      <Flex justifyContent="between" className="mb-2">
-        <p className="text-start text-dark fw-semi-bold">
-          Order Amount in BTC:
-        </p>
-        <p className="text-end text-dark">0.00078564 BTC</p>
+      <Flex justifyContent="between pb-3">
+        <span className="text-dark fw-semi-bold">Fiat Amount</span>
+        <span className="fs--1 text-dark">
+          {txnData.fiat_amount}{' '}
+          {txnData.fiat_currency == 'usd'
+            ? '$'
+            : txnData.fiat_currency == 'eur'
+            ? '€'
+            : 'error'}{' '}
+        </span>
       </Flex>
-      <Flex justifyContent="between" className="mb-2">
-        <p className="text-start text-dark fw-semi-bold">Invoice Paid Time:</p>
-        <p className="text-end text-dark">2023-01-15 14:07 UTC</p>
+      <Flex justifyContent="between pb-3">
+        <span className="text-dark fw-semi-bold">Fees</span>
+        <span className="fs--1 text-dark">
+          0.00{' '}
+          {txnData.fiat_currency == 'usd'
+            ? '$'
+            : txnData.fiat_currency == 'eur'
+            ? '€'
+            : 'error'}
+        </span>
+      </Flex>
+      <hr />
+      <Flex justifyContent="between pb-2">
+        <span className="text-dark fs--3 fw-semi-bold">Total Pay</span>
+        <span style={shopTheme.theme.text} className="fs--3 text-danger fw-bold ">
+          {txnData.fiat_amount}{' '}
+          {txnData.fiat_currency == 'usd'
+            ? '$'
+            : txnData.fiat_currency == 'eur'
+            ? '€'
+            : 'error'}
+        </span>
+      </Flex>
+      <h5 className="fw-semi-bold text-dark fs-2 mb-3 mt-3">Deposit</h5>
+      <Flex justifyContent="between pb-3">
+        <span className="text-dark fw-semi-bold">Coin</span>
+        <span className="fs--1 text-dark">{txnData.deposit.coin.name}</span>
+      </Flex>
+      <Flex justifyContent="between pb-3">
+        <span className="text-dark fw-semi-bold">Network</span>
+        <span className="fs--1 text-dark">{txnData.deposit.network.description}</span>
+      </Flex>
+      <hr />
+      <Flex justifyContent="between pb-3">
+        <span className="text-dark fw-semi-bold">Amount Due</span>
+        <span className="fs--1 text-dark">{txnData.deposit.amount} {txnData.deposit.coin.symbol}</span>
+      </Flex>
+      <Flex justifyContent="between pb-3">
+        <span className="text-dark fw-semi-bold">Amount Sent</span>
+        <span className="fs--1 text-dark">{txnData.deposit.real_amount_received} {txnData.deposit.coin.symbol}</span>
+      </Flex>
+      <hr />
+      <Flex justifyContent="between pb-3">
+        <span className="text-dark fw-semi-bold">Your address</span>
+        <span className="fs--1 text-dark">{txnData.deposit.user_address}</span>
+      </Flex>
+      <Flex justifyContent="between pb-3">
+        <span className="text-dark fw-semi-bold">Blockchain Txn</span>
+        <span className="fs--1 text-dark">{txnData.deposit.blockchain_txid}</span>
       </Flex>
     </Flex>
   );

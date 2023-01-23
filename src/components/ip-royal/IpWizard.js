@@ -44,7 +44,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
     clearErrors
   } = useForm();
 
-  const [modal, setModal] = useState(false);
+  const [modal, setModal] = useState({"open": false, "switchMessage": ""});
 
   const navItems = [
     {
@@ -77,7 +77,9 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
     }
   };
 
-  const toggle = () => setModal(!modal);
+  const toggle = (switchMessage) => {
+    setModal({"open": !modal.open, "switchMessage": switchMessage});
+  };
 
   const handleNavs = targetStep => {
     if (step !== 4) {
@@ -86,10 +88,18 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
       } else {
         handleSubmit(onSubmitData, onError)();
       }
-    } else {
-      toggle();
     }
   };
+
+  const handleBack = () => {
+    if (step == 3){
+      toggle("scanPageBack");    
+    }
+    else{
+      setStep(step - 1);
+    }
+  }
+  
 
   const [formData, setFormData] = useState({
     coin_id: undefined,
@@ -101,6 +111,14 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
     "min": 1,
     "max": 4,
   });
+
+  const [shopTheme, setShopTheme] = useState({
+    "available": false,
+    "theme": {
+
+    }
+  });
+
   const [socket, setSocket] = useState(null);
   
 
@@ -120,6 +138,22 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
       return;
     }
 
+/*     if (txnData.deposit.coin_id != formData.coin_id && txnData.deposit.coin_id != undefined) {
+      console.log("txnData.deposit.coin_id != formData.coin_id", txnData.deposit.coin_id, formData.coin_id);
+      setFormData({
+        ...formData,
+        coin_id: txnData.deposit.coin_id,
+      });
+    }
+
+    if (txnData.deposit.network_id != formData.network_id && txnData.deposit.network_id != undefined) {
+      console.log("txnData.deposit.network_id != formData.network_id", txnData.deposit.network_id, formData.network_id);
+      setFormData({
+        ...formData,
+        network_id: txnData.deposit.network_id,
+      });
+    } */
+
     if (txnData.deposit.status == 'pending') {
       setAvailableStep({
         "min": 1,
@@ -131,6 +165,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
         "min": 1,
         "max": 4,
       });
+      setStep(3)
     }
     else if (txnData.deposit.status == 'waitingconfirm') {
       setAvailableStep({
@@ -159,8 +194,42 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
     }
   }, [availableStep]);
 
-  console.log(txnData);
+  useEffect(() => {
+    if (txnData == undefined) {
+      return;
+    }
 
+    if (Object.keys(txnData.shop.theme_customization).length != 0){
+      console.log("txnData.shop.theme_customization", txnData.shop.theme_customization);
+      setShopTheme({
+        "available": true,
+        "theme": {
+          "button" : {
+            "--falcon-btn-disabled-bg": txnData.shop.theme_customization.primary,
+            "--falcon-btn-border-color": txnData.shop.theme_customization.primary,
+            "--falcon-btn-bg": txnData.shop.theme_customization.primary,
+            "--falcon-btn-hover-bg": txnData.shop.theme_customization.primary,
+            "--falcon-btn-hover-color": txnData.shop.theme_customization.primary_text,
+            "--falcon-btn-color": txnData.shop.theme_customization.primary_text,
+            "--falcon-btn-disabled-color": txnData.shop.theme_customization.primary_text,
+            "--falcon-btn-disabled-border-color" : txnData.shop.theme_customization.primary,
+            "--falcon-btn-hover-border-color": txnData.shop.theme_customization.primary,
+            "--falcon-btn-focus-shadow-rgb" : "241,93,84",
+            "--falcon-btn-active-color" : txnData.shop.theme_customization.primary_text,
+            "--falcon-btn-active-bg" : txnData.shop.theme_customization.primary,
+            "--falcon-btn-active-border-color" : txnData.shop.theme_customization.primary,
+          },
+          "text" : {
+            "--falcon-danger-rgb" : "254,181,0",
+          },
+          "nav":{
+            "--falcon-danger" : txnData.shop.theme_customization.primary,
+          }
+        }
+    });
+  }
+  
+  }, [txnData]);
 
   return (
     <>
@@ -189,6 +258,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
               : navItems.map((item, index) => (
                   <NavItem
                     key={item.label}
+                    shopTheme={shopTheme}
                     index={index + 1}
                     step={step}
                     handleNavs={handleNavs}
@@ -200,7 +270,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
         </div>
       </div>
       <Container fluid="md">
-        <WizardModal modal={modal} setModal={setModal} />
+        <WizardModal shopTheme={shopTheme} modal={modal} setModal={setModal} setStep={setStep} />
         <Form
           noValidate
           onSubmit={handleSubmit(onSubmitData, onError)}
@@ -226,11 +296,13 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                         errors={errors}
                         watch={watch}
                         txn_hash={params.txn_hash}
+                        shopTheme={shopTheme}
                       />
                     </div>
 
                     <Button
                       variant="danger"
+                      style={shopTheme.theme.button}
                       className="ms-auto rounded-4  w-100 px-5 mt-5 py-3"
                       type="submit"
                       transform="down-1 shrink-4"
@@ -271,8 +343,8 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                     </Flex>
                     <hr />
                     <Flex justifyContent="between pb-2">
-                      <span className="text-dark fw-semi-bold">Total Pay</span>
-                      <span className="fs--1 text-danger fw-bold ">
+                      <span className="text-dark fs--3 fw-semi-bold">Total Pay</span>
+                      <span style={shopTheme.theme.text} className="fs--3 text-danger fw-bold ">
                         {txnData.fiat_amount} {txnData.fiat_currency == "usd" ? "$" : txnData.fiat_currency == "eur" ? "€" : "error" }
                       </span>
                     </Flex>
@@ -297,6 +369,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                 </Card.Header>
                 <Card.Body className="d-flex flex-column justify-content-between">
                   <div>
+                    {formData.coin_id != undefined && (
                     <ChoseNetworkForm
                       activeCoin={formData.coin_id}
                       activeNetwork={formData.network_id}
@@ -304,15 +377,18 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                       register={register}
                       errors={errors}
                       watch={watch}
+                      shopTheme={shopTheme}
                     />
+                    )}
                   </div>
 
                   <Button
                     variant="danger"
+                    style={shopTheme.theme.button}
                     className="ms-auto rounded-4  w-100 px-5 mt-3 py-3"
                     type="submit"
                     transform="down-1 shrink-4"
-                    disabled={formData.network_id === undefined}
+                    disabled={formData.network_id === undefined || formData.coin_id === undefined}
                     onClick={() => {
                       setTxnData({...txnData, deposit: {
                         amount: undefined,
@@ -337,6 +413,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                 <Card.Body className="d-flex flex-column justify-content-between">
                   <ScanCode
                     register={register}
+                    shopTheme={shopTheme}
                     txnData={txnData}
                     errors={errors}
                     setValue={setValue}
@@ -348,36 +425,57 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
               <Flex alignItems="center" direction="column" className="gap-3">
                 <Card className="rounded-4 mx-auto shadow-sm w-lg-50 w-100">
                   <Card.Body className="d-flex flex-column justify-content-between">
-                    <Invoice />
+                    <Invoice txnData={txnData} shopTheme={shopTheme} />
                   </Card.Body>
                 </Card>
-                <Button className="btn-danger py-3 rounded-4 mx-auto w-100 w-lg-50">
+                <Button style={shopTheme.theme.button} className="btn-danger py-3 rounded-4 mx-auto w-100 w-lg-50">
                   Download Invoice
                 </Button>
               </Flex>
             )}
           </div>
           <div
-            className={classNames('px-lg-6 position-absolute', {
+            className={classNames('px-lg-6 position-absolute start-0', {
               'd-none': step === 4,
-              ' d-none d-lg-flex': step < 4
+              'd-lg-flex d-none': step < 4
             })}
-            style={{ top: '45%', left: '5%' }}
+            style={{ top: '45%' }}
           >
             <IconButton
               variant="danger"
+              style={shopTheme.theme.button}
               icon={isRTL ? 'chevron-right' : 'chevron-left'}
               iconAlign="left"
               transform="down-1 shrink-4"
               className={classNames(
                 'px-0 fw-semi-bold rounded-circle px-3 py-2 shadow-sm',
                 {
-                  'd-none': step - 1 < availableStep.min
+                  'd-none': step === 1
                 }
               )}
-              onClick={() => {
-                setStep(step - 1);
-              }}
+              onClick={handleBack}
+            />
+          </div>
+          <div
+            className={classNames('px-lg-6 position-absolute ', {
+              'd-none': step === 4,
+              'd-lg-none d-flex': step < 4
+            })}
+            style={{ top: '45%', left: -30 }}
+          >
+            <IconButton
+              variant="danger"
+              style={shopTheme.theme.button}
+              icon={isRTL ? 'chevron-right' : 'chevron-left'}
+              iconAlign="left"
+              transform="down-1 shrink-4"
+              className={classNames(
+                'px-0 fw-semi-bold rounded-circle px-3 py-2 shadow-sm',
+                {
+                  'd-none': step === 1
+                }
+              )}
+              onClick={handleBack}
             />
           </div>
         </Form>
@@ -388,7 +486,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
   );
 };
 
-const NavItem = ({ index, step, handleNavs, label }) => {
+const NavItem = ({ index, step, handleNavs, label ,shopTheme }) => {
   return (
     <Nav.Item>
       <Nav.Link
@@ -396,13 +494,14 @@ const NavItem = ({ index, step, handleNavs, label }) => {
           done: index < 4 ? step > index : step > 3,
           active: step === index
         })}
+        style={shopTheme.theme.nav}
       >
         <span className="nav-item-circle-parent ">
           <span
             style={{ borderRadius: '40%' }}
             className="nav-item-circle position-relative"
           >
-            {step !== index && <Check />}
+            {step > index && <Check />}
             <span
               hidden={index <= 4 ? step > index : step > 3}
               className="position-absolute top-0"

@@ -18,7 +18,8 @@ const ChoseCoinForm = ({
   watch,
   setFormData,
   activeCoin,
-  txn_hash
+  txn_hash,
+  shopTheme
 }) => {
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +47,7 @@ const ChoseCoinForm = ({
   }, [coins]);
 
   if (loading) {
-    return <Loading />;
+    return <Loading shopTheme={shopTheme} />;
   }
 
   if (!loading) {

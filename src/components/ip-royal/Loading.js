@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Col, Row, Container, Spinner } from 'react-bootstrap';
 import classNames from 'classnames';
-const Loading = () => {
+const Loading = ({shopTheme = undefined}) => {
   return (
     <>
       <Container
@@ -9,7 +9,7 @@ const Loading = () => {
         fluid="md"
       >
         <div class="h-100 d-flex align-items-center justify-content-center">
-          <Spinner animation="border" variant="danger" />
+          <Spinner style={shopTheme != undefined ? shopTheme.theme.text : {}} animation="border" variant="danger" />
         </div>
       </Container>
     </>
