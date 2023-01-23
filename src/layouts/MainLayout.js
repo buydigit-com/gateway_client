@@ -41,10 +41,10 @@ const MainLayout = () => {
       <ProductProvider>
         <CourseProvider>
           <div className={classNames('content', { 'pb-0': isKanban })}>
-            <NavbarTop />
+            
             {/*------ Main Routes ------*/}
             <Outlet />
-            <Footer />
+            
           </div>
         </CourseProvider>
       </ProductProvider>

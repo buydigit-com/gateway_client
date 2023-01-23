@@ -5,6 +5,7 @@ import ProfileDropdown from 'components/navbar/top/ProfileDropdown';
 import AppContext from 'context/Context';
 import React, { useContext } from 'react';
 import { Nav } from 'react-bootstrap';
+import { ShopThemeContext } from '../../ip-royal/provider/ShopThemeProvider';
 // import NineDotMenu from './NineDotMenu';
 
 const TopNavRightSideNavItem = () => {
@@ -12,6 +13,9 @@ const TopNavRightSideNavItem = () => {
     config: { isDark },
     setConfig
   } = useContext(AppContext);
+
+  const shopTheme = useContext(ShopThemeContext);
+
   return (
     <Nav
       navbar
@@ -21,7 +25,7 @@ const TopNavRightSideNavItem = () => {
       <Nav.Item as={'li'}>
         <Nav.Link
           className="btn btn-danger text-white px-3 my-2 rounded-3 btn-sm me-2"
-          style={{ paddingBottom: '5px', paddingTop: '5px' }}
+          style={{...shopTheme.theme.button, ...{ paddingBottom: '5px', paddingTop: '5px' }}}
           disabled={true}
           // onClick={() => setConfig('isDark', !isDark)}
         >

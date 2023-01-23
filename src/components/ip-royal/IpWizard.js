@@ -28,12 +28,21 @@ import { toBeRequired } from '@testing-library/jest-dom/dist/matchers';
 import { min } from 'd3';
 import Loading from './Loading';
 
+import { NavStepContext } from './provider/NavStepProvider';
+import { WebSocketContext } from './provider/WebSocketProvider';
+import { TxnDataContext } from './provider/TxnDataProvider';
+import { ShopThemeContext } from './provider/ShopThemeProvider';
+
 const IpWizardLayout = ({ variant, validation, progressBar }) => {
 
   const params = useParams();
 
   const { isRTL } = useContext(AppContext);
-  const { user, setUser, step, setStep } = useContext(AuthWizardContext);
+  
+  const { step, setStep, availableStep, setAvailableStep } = useContext(NavStepContext);
+  const {socket,txnHash} = useContext(WebSocketContext);
+  const txnData = useContext(TxnDataContext);
+  const shopTheme = useContext(ShopThemeContext);
 
   const {
     register,
@@ -66,7 +75,6 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
   ];
 
   const onSubmitData = data => {
-    setUser({ ...user, ...data });
     setStep(step + 1);
   };
 
@@ -106,135 +114,9 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
     network_id: undefined,
   });
 
-  const [txnData, setTxnData] = useState(undefined);
-  const [availableStep, setAvailableStep] = useState({
-    "min": 1,
-    "max": 4,
-  });
-
-  const [shopTheme, setShopTheme] = useState({
-    "available": false,
-    "theme": {
-
-    }
-  });
-
-  const [socket, setSocket] = useState(null);
-  
-
-  useEffect(() => {
-    const newSocket = io("http://api.buydigit.com:5000/", { query: "txn_hash="+params.txn_hash , rememberUpgrade:true, rememberTransport:true,transport: ['websocket'] });
-    setSocket(newSocket);
-    
-    newSocket.on(params.txn_hash, (data) => {
-      setTxnData(JSON.parse(data));
-    });
-
-    return () => newSocket.close();
-  }, []);
-
-  useEffect(() => {
-    if (txnData == undefined) {
-      return;
-    }
-
-/*     if (txnData.deposit.coin_id != formData.coin_id && txnData.deposit.coin_id != undefined) {
-      console.log("txnData.deposit.coin_id != formData.coin_id", txnData.deposit.coin_id, formData.coin_id);
-      setFormData({
-        ...formData,
-        coin_id: txnData.deposit.coin_id,
-      });
-    }
-
-    if (txnData.deposit.network_id != formData.network_id && txnData.deposit.network_id != undefined) {
-      console.log("txnData.deposit.network_id != formData.network_id", txnData.deposit.network_id, formData.network_id);
-      setFormData({
-        ...formData,
-        network_id: txnData.deposit.network_id,
-      });
-    } */
-
-    if (txnData.deposit.status == 'pending') {
-      setAvailableStep({
-        "min": 1,
-        "max": 4,
-      });
-    }
-    else if (txnData.deposit.status == 'initiated') {
-      setAvailableStep({
-        "min": 1,
-        "max": 4,
-      });
-      setStep(3)
-    }
-    else if (txnData.deposit.status == 'waitingconfirm') {
-      setAvailableStep({
-        "min": 3,
-        "max": 4,
-      });
-    }
-    else if (txnData.deposit.status == 'confirmed') {
-      setAvailableStep({
-        "min": 4,
-        "max": 4,
-      });
-    }
-    else if (txnData.deposit.status == 'failed') {
-      setAvailableStep({
-        "min": 4,
-        "max": 4,
-      });
-    }
-  }, [txnData]);
-
-  useEffect(() => {
-    if (step < availableStep.min) {
-      console.log("step < availableStep.min", step, availableStep.min);
-      setStep(availableStep.min);
-    }
-  }, [availableStep]);
-
-  useEffect(() => {
-    if (txnData == undefined) {
-      return;
-    }
-
-    if (Object.keys(txnData.shop.theme_customization).length != 0){
-      console.log("txnData.shop.theme_customization", txnData.shop.theme_customization);
-      setShopTheme({
-        "available": true,
-        "theme": {
-          "button" : {
-            "--falcon-btn-disabled-bg": txnData.shop.theme_customization.primary,
-            "--falcon-btn-border-color": txnData.shop.theme_customization.primary,
-            "--falcon-btn-bg": txnData.shop.theme_customization.primary,
-            "--falcon-btn-hover-bg": txnData.shop.theme_customization.primary,
-            "--falcon-btn-hover-color": txnData.shop.theme_customization.primary_text,
-            "--falcon-btn-color": txnData.shop.theme_customization.primary_text,
-            "--falcon-btn-disabled-color": txnData.shop.theme_customization.primary_text,
-            "--falcon-btn-disabled-border-color" : txnData.shop.theme_customization.primary,
-            "--falcon-btn-hover-border-color": txnData.shop.theme_customization.primary,
-            "--falcon-btn-focus-shadow-rgb" : "241,93,84",
-            "--falcon-btn-active-color" : txnData.shop.theme_customization.primary_text,
-            "--falcon-btn-active-bg" : txnData.shop.theme_customization.primary,
-            "--falcon-btn-active-border-color" : txnData.shop.theme_customization.primary,
-          },
-          "text" : {
-            "--falcon-danger-rgb" : "254,181,0",
-          },
-          "nav":{
-            "--falcon-danger" : txnData.shop.theme_customization.primary,
-          }
-        }
-    });
-  }
-  
-  }, [txnData]);
 
   return (
     <>
-      {txnData == undefined && <Loading />}
-      {txnData != undefined && (
       <>
       <div className="w-100">
         <div
@@ -244,18 +126,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
           })}
         >
           <Nav className="justify-content-center" variant={'variant'}>
-            {variant === 'pills'
-              ? navItems.map((item, index) => (
-                  <NavItemPill
-                    key={item.label}
-                    index={index + 1}
-                    step={step}
-                    handleNavs={handleNavs}
-                    icon={'check'}
-                    label={item.label}
-                  />
-                ))
-              : navItems.map((item, index) => (
+            {navItems.map((item, index) => (
                   <NavItem
                     key={item.label}
                     shopTheme={shopTheme}
@@ -390,9 +261,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                     transform="down-1 shrink-4"
                     disabled={formData.network_id === undefined || formData.coin_id === undefined}
                     onClick={() => {
-                      setTxnData({...txnData, deposit: {
-                        amount: undefined,
-                      }})
+                      txnData.deposit.amount = undefined;
                       socket.emit('initiateTransaction', {
                         txn_hash: params.txn_hash,
                         coin_id: formData.coin_id,
@@ -481,7 +350,6 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
         </Form>
       </Container>
     </>
-      )}
     </>
   );
 };
