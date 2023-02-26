@@ -206,17 +206,17 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                     <hr />
                     <Flex justifyContent="between pb-3">
                       <span className="text-dark fw-semi-bold">Fiat Amount</span>
-                      <span className="fs--1 text-dark">{txnData.fiat_amount} {txnData.fiat_currency == "usd" ? "$" : txnData.fiat_currency == "eur" ? "€" : "error" } </span>
+                      <span className="fs--1 text-dark">{txnData.fiat_amount.toFixed(2)} {txnData.fiat_currency == "usd" ? "$" : txnData.fiat_currency == "eur" ? "€" : "error" } </span>
                     </Flex>
                     <Flex justifyContent="between pb-3">
                       <span className="text-dark fw-semi-bold">Fees</span>
-                      <span className="fs--1 text-dark">0.00 {txnData.fiat_currency == "usd" ? "$" : txnData.fiat_currency == "eur" ? "€" : "error" }</span>
+                      <span className="fs--1 text-dark">00.00 {txnData.fiat_currency == "usd" ? "$" : txnData.fiat_currency == "eur" ? "€" : "error" }</span>
                     </Flex>
                     <hr />
                     <Flex justifyContent="between pb-2">
                       <span className="text-dark fs--3 fw-semi-bold">Total Pay</span>
                       <span style={shopTheme.theme.text} className="fs--3 text-danger fw-bold ">
-                        {txnData.fiat_amount} {txnData.fiat_currency == "usd" ? "$" : txnData.fiat_currency == "eur" ? "€" : "error" }
+                        {txnData.fiat_amount.toFixed(2)} {txnData.fiat_currency == "usd" ? "$" : txnData.fiat_currency == "eur" ? "€" : "error" }
                       </span>
                     </Flex>
                     <Flex justifyContent="between pb-3">
@@ -297,8 +297,11 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                     <Invoice txnData={txnData} shopTheme={shopTheme} />
                   </Card.Body>
                 </Card>
-                <Button style={shopTheme.theme.button} className="btn-danger py-3 rounded-4 mx-auto w-100 w-lg-50">
+                <Button style={shopTheme.theme.button} className="disabled btn-danger py-3 rounded-4 mx-auto w-100 w-lg-50">
                   Download Invoice
+                </Button>
+                <Button style={shopTheme.theme.button} className="btn-danger py-3 rounded-4 mx-auto w-100 w-lg-50">
+                  Return back to {txnData.shop.name}
                 </Button>
               </Flex>
             )}

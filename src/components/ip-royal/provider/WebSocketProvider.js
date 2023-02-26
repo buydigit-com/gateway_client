@@ -11,6 +11,7 @@ const WebSocketProvider = ({ children }) => {
   const txnHash = params.txn_hash;
 
   const socket = io(process.env.REACT_APP_BACKEND_API_URL, {
+    path: '/ws',
     query: 'txn_hash=' + txnHash,
     rememberUpgrade: true,
     rememberTransport: true,

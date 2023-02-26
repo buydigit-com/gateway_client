@@ -22,6 +22,8 @@ const TxnDataProvider = ({ children }) => {
     return <Loading init={true} />
   }
 
+  console.log(txnData);
+
   return (
     <TxnDataContext.Provider value={txnData}>
       {children}

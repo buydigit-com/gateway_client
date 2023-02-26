@@ -59,7 +59,7 @@ const Layout = () => {
           <Route path="/checkout/:txn_hash" element={<Gateway />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/errors/404" replace />} />
+        <Route path="*" element={<Navigate to="/checkout/mainpanel" replace />} />
       </Routes>
       <ToastContainer
         closeButton={CloseButton}

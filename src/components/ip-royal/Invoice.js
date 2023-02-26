@@ -25,7 +25,7 @@ const Invoice = ({ txnData,shopTheme }) => {
       <Flex justifyContent="between pb-3">
         <span className="text-dark fw-semi-bold">Fiat Amount</span>
         <span className="fs--1 text-dark">
-          {txnData.fiat_amount}{' '}
+          {txnData.fiat_amount.toFixed(2)}{' '}
           {txnData.fiat_currency == 'usd'
             ? '$'
             : txnData.fiat_currency == 'eur'
@@ -36,7 +36,7 @@ const Invoice = ({ txnData,shopTheme }) => {
       <Flex justifyContent="between pb-3">
         <span className="text-dark fw-semi-bold">Fees</span>
         <span className="fs--1 text-dark">
-          0.00{' '}
+          00.00{' '}
           {txnData.fiat_currency == 'usd'
             ? '$'
             : txnData.fiat_currency == 'eur'
@@ -48,7 +48,7 @@ const Invoice = ({ txnData,shopTheme }) => {
       <Flex justifyContent="between pb-2">
         <span className="text-dark fs--3 fw-semi-bold">Total Pay</span>
         <span style={shopTheme.theme.text} className="fs--3 text-danger fw-bold ">
-          {txnData.fiat_amount}{' '}
+          {txnData.fiat_amount.toFixed(2)}{' '}
           {txnData.fiat_currency == 'usd'
             ? '$'
             : txnData.fiat_currency == 'eur'
