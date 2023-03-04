@@ -72,7 +72,7 @@ const ScanCode = ({ register, errors, watch, txnData, shopTheme }) => {
               </Flex>
               <span className="fs--1  " style={{ width: '90px' }}>
                 Blockchain Transaction: &nbsp;&nbsp;
-                <a target="_blank" href={txnData.deposit.network.explorer_url+txnData.deposit.blockchain_txid}>{txnData.deposit.blockchain_txid.substring(0, 30)+"..."}</a>  
+                  <a target="_blank" href={txnData.deposit.network.explorer_url+txnData.deposit.blockchain_txid}>{txnData.deposit.network.explorer_url+txnData.deposit.blockchain_txid.substring(0, 10)+"..."}</a>  
               </span>
             </div>
           );

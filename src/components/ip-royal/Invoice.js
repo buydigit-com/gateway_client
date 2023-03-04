@@ -76,12 +76,10 @@ const Invoice = ({ txnData,shopTheme }) => {
       </Flex>
       <hr />
       <Flex justifyContent="between pb-3">
-        <span className="text-dark fw-semi-bold">Your address</span>
-        <span className="fs--1 text-dark">{txnData.deposit.user_address}</span>
+        <span className="text-dark fw-semi-bold">Blockchain Txn</span>
       </Flex>
       <Flex justifyContent="between pb-3">
-        <span className="text-dark fw-semi-bold">Blockchain Txn</span>
-        <span className="fs--1 text-dark">{txnData.deposit.blockchain_txid}</span>
+        <a target="_blank" href={txnData.deposit.network.explorer_url+txnData.deposit.blockchain_txid}>{txnData.deposit.network.explorer_url+txnData.deposit.blockchain_txid.substring(0, 10)+"..."}</a>  
       </Flex>
     </Flex>
   );
