@@ -43,7 +43,7 @@ const ScanCode = ({ register, errors, watch, txnData, shopTheme }) => {
               <span className="text-dark text-truncate fw-semi-bold">
                 Payment Status:&nbsp;
                 <SoftBadge pill bg="warning" className="ml-2">
-                  Blockchain On Hold
+                  Payment detected, waiting for confirmations
                 </SoftBadge>
               </span>
               <Spinner animation="grow" size="sm" />

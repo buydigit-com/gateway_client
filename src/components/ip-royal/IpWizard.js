@@ -301,7 +301,7 @@ const IpWizardLayout = ({ variant, validation, progressBar }) => {
                   Download Invoice
                 </Button>
                 <Button style={shopTheme.theme.button} className="btn-danger py-3 rounded-4 mx-auto w-100 w-lg-50">
-                  Return back to {txnData.shop.name}
+                  <a href='https://smm-mainpanel.com/transactions'>Return back to {txnData.shop.name}</a>
                 </Button>
               </Flex>
             )}
