@@ -22,6 +22,10 @@ const TxnDataProvider = ({ children }) => {
     return <Loading init={true} />
   }
 
+  if (txnData.deposit != undefined && txnData.deposit.status != undefined && txnData.deposit.status == "expired") {
+    return <Loading init={true} />
+  }
+
   console.log(txnData);
 
   return (
