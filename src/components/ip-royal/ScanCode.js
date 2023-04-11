@@ -91,6 +91,9 @@ const ScanCode = ({ register, errors, watch, txnData, shopTheme }) => {
           direction="column"
           className="py-3 cursor-pointer"
         >
+          <span className="fs-1 text-center fw-semi-bold text-danger fs-2 mb-2">
+              SEND THE EXACT AMOUNT OR THE TRANSACTION WILL FAIL!
+          </span>
           <span className="fs-0 text-dark"> You are paying</span>
           <span>
             <span style={shopTheme.theme.text} className="fs-1 fw-semi-bold text-danger fs-2">

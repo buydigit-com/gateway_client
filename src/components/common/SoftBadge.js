@@ -5,7 +5,7 @@ import classNames from 'classnames';
 const SoftBadge = ({ bg = 'primary', pill, children, className }) => {
   return (
     <div
-      className={classNames(className, `badge badge-soft-${bg}`, {
+      className={classNames(className, ` badge-soft-${bg}`, {
         'rounded-pill': pill
       })}
     >
